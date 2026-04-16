@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/error.css' %}">
+{% endblock %}
+
+{% block title %}Page Not Found - 404{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+    <div class="row align-items-center">
+        <div class="col-lg-6 mx-auto">
+            <h1 class="display-1 fw-bold text-danger">404</h1>
+            <h2 class="mb-3">Page Not Found</h2>
+            <p class="lead text-muted mb-4">
+                Oops! The page you're looking for doesn't exist or has been moved.
+            </p>
+            
+            <div class="alert alert-info">
+                <p class="mb-0">This could happen if:</p>
+                <ul class="text-start">
+                    <li>The build URL was misspelled</li>
+                    <li>The build has been deleted</li>
+                    <li>You don't have permission to view this build</li>
+                </ul>
+            </div>
+            
+            <div class="d-grid gap-2 d-sm-flex justify-content-center">
+                <a href="{% url 'builds:build_list' %}" class="btn btn-primary btn-lg">
+                    ← Back to My Builds
+                </a>
+                <a href="{% url 'home' %}" class="btn btn-outline-primary btn-lg">
+                    Go Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

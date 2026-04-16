@@ -1,0 +1,19 @@
+/* Build Detail Page */
+.build-detail-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.build-detail-warning {
+    margin-bottom: 1rem;
+}
+
+.build-detail-table td,
+.build-detail-table th {
+    vertical-align: middle;
+}
+
+.build-detail-backlink {
+    margin-top: 1.5rem;
+}

@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block title %}Sign Up - PC Build Planner{% endblock %}
+
+{% block content %}
+<div class="auth-page row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow-lg auth-card">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-4 auth-heading">
+                    Create Your Account
+                </h2>
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Error Creating Account</strong>
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+                
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Username</label>
+                        {% if form.username.errors %}
+                            {{ form.username }}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.username.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.username }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Email Address</label>
+                        {% if form.email.errors %}
+                            {{ form.email }}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.email.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.email }}
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_password1" class="form-label">Password</label>
+                        {% if form.password1.errors %}
+                            {{ form.password1 }}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.password1.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.password1 }}
+                        {% endif %}
+                        <small class="form-text text-muted d-block mt-2">
+                            Must be at least 8 characters. Should include uppercase, lowercase, and numbers.
+                        </small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_password2" class="form-label">Confirm Password</label>
+                        {% if form.password2.errors %}
+                            {{ form.password2 }}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.password2.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.password2 }}
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success w-100 mt-3" style="font-size: 1.1rem; padding: 10px;">
+                        Create Account
+                    </button>
+                </form>
+                
+                <hr class="my-4">
+                
+                <p class="text-center text-muted">
+                    Already have an account?
+                    <a href="{% url 'builds:login' %}" class="text-decoration-none auth-muted-link">
+                        Sign in here
+                    </a>
+                </p>
+            </div>
+        </div>
+        
+        <p class="text-center mt-3 text-muted small">
+            <em>Your information will be kept secure and used only for your PC Build Planner account.</em>
+        </p>
+    </div>
+</div>
+{% endblock %}

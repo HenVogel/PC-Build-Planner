@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}PC Build Planner - Home{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col-lg-8">
+        <h1 class="display-4 fw-bold mb-4">PC Build Planner</h1>
+        <p class="lead mb-4">
+            Design and manage your perfect PC build with ease. Track components, budgets, and find the best deals
+            for your next computer upgrade.
+        </p>
+        
+        {% if user.is_authenticated %}
+            <div class="d-grid gap-2 d-sm-flex">
+                <a href="{% url 'builds:build_list' %}" class="btn btn-primary btn-lg btn-custom">View My Builds</a>
+                <a href="{% url 'builds:build_create' %}" class="btn btn-outline-primary btn-lg btn-custom">Create New Build</a>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <p class="mb-0">Start building your perfect PC today!</p>
+            </div>
+            <div class="d-grid gap-2 d-sm-flex">
+                <a href="{% url 'builds:login' %}" class="btn btn-primary btn-lg btn-custom">Login</a>
+                <a href="{% url 'builds:signup' %}" class="btn btn-outline-primary btn-lg btn-custom">Create Account</a>
+            </div>
+        {% endif %}
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-primary">
+            <div class="card-body">
+                <h5 class="card-title">Features</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">✓ Manage multiple PC builds</li>
+                    <li class="list-group-item">✓ Track component prices</li>
+                    <li class="list-group-item">✓ Monitor total budget</li>
+                    <li class="list-group-item">✓ Swap parts easily</li>
+                    <li class="list-group-item">✓ Secure authorization</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if user.is_authenticated %}
+<hr class="my-5">
+
+<div class="row mt-5">
+    <div class="col-12">
+        <h3 class="mb-4">Quick Stats</h3>
+    </div>
+    {% if user.pc_builds.all %}
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="card-title">{{ user.pc_builds.count }}</h4>
+                    <p class="card-text">Total Builds</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

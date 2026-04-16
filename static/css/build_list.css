@@ -1,0 +1,60 @@
+/* Build List Page */
+.build-list-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.build-list-card {
+    height: 100%;
+    position: relative;
+}
+
+.build-favorite-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+.favorite-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.favorite-btn:hover {
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: scale(1.1);
+}
+
+.favorite-btn .heart-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.build-list-card .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.build-list-card .card-footer {
+    margin-top: auto;
+}
+
+.build-list-empty {
+    padding: 2rem 1rem;
+}

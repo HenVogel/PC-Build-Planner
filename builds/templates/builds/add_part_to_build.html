@@ -1,0 +1,695 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Add Parts to {{ build.name }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/add_part_to_build.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="col-md-12 mx-auto">
+    <div class="mb-4">
+        <h2 class="build-header">Add Parts to {{ build.name }}</h2>
+        <p class="text-muted">Remaining Budget: 
+            {% with remaining=build.get_remaining_budget %}
+                {% if remaining >= 0 %}
+                    <span style="color: #28a745;"><strong>${{ remaining|floatformat:2 }}</strong></span>
+                {% else %}
+                    <span style="color: #dc3545;"><strong>${{ remaining|add:0 }}</strong> (Over budget)</span>
+                {% endif %}
+            {% endwith %}
+        </p>
+    </div>
+
+    <div class="row">
+        <!-- Left side: Parts selection accordion -->
+        <div class="col-lg-8">
+            <h5 class="mb-3">Select Parts</h5>
+            <div class="accordion" id="partsAccordion">
+                <!-- CPU Section -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#cpuCollapse">
+                            CPU Processors
+                        </button>
+                    </h2>
+                    <div id="cpuCollapse" class="accordion-collapse collapse show" data-bs-parent="#partsAccordion">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                {% for part in parts %}
+                                    {% if part.part_type == 'CPU' %}
+                                    <div class="col-12 col-md-6">
+                                        <div class="card h-100 part-card" data-part-id="{{ part.id }}" data-part-name="{{ part.name|escapejs }}" data-part-type="{{ part.part_type }}" data-part-price="{{ part.price }}" data-allows-multiple="{% if part.allows_multiple %}true{% else %}false{% endif %}">
+                                            <button class="favorite-btn part-favorite-btn" 
+                                                    data-part-id="{{ part.id }}"
+                                                    data-is-favorited="{% if user in part.favorited_by.all %}true{% else %}false{% endif %}">
+                                                <img src="{% static 'images/heart-not-favorited.svg' %}" class="heart-icon" alt="Add to favorites">
+                                            </button>
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{ part.name }}</h6>
+                                                <small class="text-muted d-block">{{ part.manufacturer }}</small>
+                                                <div class="mt-2">
+                                                    <strong class="text-primary">${{ part.price }}</strong>
+                                                    {% if part.wattage %}
+                                                        <span class="badge bg-info ms-2">{{ part.wattage }}W</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Motherboard Section -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#motherboardCollapse">
+                            Motherboards
+                        </button>
+                    </h2>
+                    <div id="motherboardCollapse" class="accordion-collapse collapse" data-bs-parent="#partsAccordion">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                {% for part in parts %}
+                                    {% if part.part_type == 'MOTHERBOARD' %}
+                                    <div class="col-12 col-md-6">
+                                        <div class="card h-100 part-card" data-part-id="{{ part.id }}" data-part-name="{{ part.name|escapejs }}" data-part-type="{{ part.part_type }}" data-part-price="{{ part.price }}" data-allows-multiple="{% if part.allows_multiple %}true{% else %}false{% endif %}">
+                                            <button class="favorite-btn part-favorite-btn" 
+                                                    data-part-id="{{ part.id }}"
+                                                    data-is-favorited="{% if user in part.favorited_by.all %}true{% else %}false{% endif %}">
+                                                <img src="{% static 'images/heart-not-favorited.svg' %}" class="heart-icon" alt="Add to favorites">
+                                            </button>
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{ part.name }}</h6>
+                                                <small class="text-muted d-block">{{ part.manufacturer }}</small>
+                                                <div class="mt-2">
+                                                    <strong class="text-primary">${{ part.price }}</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GPU Section -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#gpuCollapse">
+                            Graphics Cards
+                        </button>
+                    </h2>
+                    <div id="gpuCollapse" class="accordion-collapse collapse" data-bs-parent="#partsAccordion">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                {% for part in parts %}
+                                    {% if part.part_type == 'GPU' %}
+                                    <div class="col-12 col-md-6">
+                                        <div class="card h-100 part-card" data-part-id="{{ part.id }}" data-part-name="{{ part.name|escapejs }}" data-part-type="{{ part.part_type }}" data-part-price="{{ part.price }}" data-allows-multiple="{% if part.allows_multiple %}true{% else %}false{% endif %}">
+                                            <button class="favorite-btn part-favorite-btn" 
+                                                    data-part-id="{{ part.id }}"
+                                                    data-is-favorited="{% if user in part.favorited_by.all %}true{% else %}false{% endif %}">
+                                                <img src="{% static 'images/heart-not-favorited.svg' %}" class="heart-icon" alt="Add to favorites">
+                                            </button>
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{ part.name }}</h6>
+                                                <small class="text-muted d-block">{{ part.manufacturer }}</small>
+                                                <div class="mt-2">
+                                                    <strong class="text-primary">${{ part.price }}</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RAM Section -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ramCollapse">
+                            Memory (RAM)
+                        </button>
+                    </h2>
+                    <div id="ramCollapse" class="accordion-collapse collapse" data-bs-parent="#partsAccordion">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                {% for part in parts %}
+                                    {% if part.part_type == 'RAM' %}
+                                    <div class="col-12 col-md-6">
+                                        <div class="card h-100 part-card" data-part-id="{{ part.id }}" data-part-name="{{ part.name|escapejs }}" data-part-type="{{ part.part_type }}" data-part-price="{{ part.price }}" data-allows-multiple="{% if part.allows_multiple %}true{% else %}false{% endif %}">
+                                            <button class="favorite-btn part-favorite-btn" 
+                                                    data-part-id="{{ part.id }}"
+                                                    data-is-favorited="{% if user in part.favorited_by.all %}true{% else %}false{% endif %}">
+                                                <img src="{% static 'images/heart-not-favorited.svg' %}" class="heart-icon" alt="Add to favorites">
+                                            </button>
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{ part.name }}</h6>
+                                                <small class="text-muted d-block">{{ part.manufacturer }}</small>
+                                                <div class="mt-2">
+                                                    <strong class="text-primary">${{ part.price }}</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Storage Section -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#storageCollapse">
+                            Storage (SSD/HDD)
+                        </button>
+                    </h2>
+                    <div id="storageCollapse" class="accordion-collapse collapse" data-bs-parent="#partsAccordion">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                {% for part in parts %}
+                                    {% if part.part_type == 'SSD' or part.part_type == 'HDD' %}
+                                    <div class="col-12 col-md-6">
+                                        <div class="card h-100 part-card" data-part-id="{{ part.id }}" data-part-name="{{ part.name|escapejs }}" data-part-type="{{ part.part_type }}" data-part-price="{{ part.price }}" data-allows-multiple="{% if part.allows_multiple %}true{% else %}false{% endif %}">
+                                            <button class="favorite-btn part-favorite-btn" 
+                                                    data-part-id="{{ part.id }}"
+                                                    data-is-favorited="{% if user in part.favorited_by.all %}true{% else %}false{% endif %}">
+                                                <img src="{% static 'images/heart-not-favorited.svg' %}" class="heart-icon" alt="Add to favorites">
+                                            </button>
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{ part.name }}</h6>
+                                                <small class="text-muted d-block">{{ part.manufacturer }}</small>
+                                                <div class="mt-2">
+                                                    <strong class="text-primary">${{ part.price }}</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Power Supply Section -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#psuCollapse">
+                            Power Supply (PSU)
+                        </button>
+                    </h2>
+                    <div id="psuCollapse" class="accordion-collapse collapse" data-bs-parent="#partsAccordion">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                {% for part in parts %}
+                                    {% if part.part_type == 'PSU' %}
+                                    <div class="col-12 col-md-6">
+                                        <div class="card h-100 part-card" data-part-id="{{ part.id }}" data-part-name="{{ part.name|escapejs }}" data-part-type="{{ part.part_type }}" data-part-price="{{ part.price }}" data-allows-multiple="{% if part.allows_multiple %}true{% else %}false{% endif %}">
+                                            <button class="favorite-btn part-favorite-btn" 
+                                                    data-part-id="{{ part.id }}"
+                                                    data-is-favorited="{% if user in part.favorited_by.all %}true{% else %}false{% endif %}">
+                                                <img src="{% static 'images/heart-not-favorited.svg' %}" class="heart-icon" alt="Add to favorites">
+                                            </button>
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{ part.name }}</h6>
+                                                <small class="text-muted d-block">{{ part.manufacturer }}</small>
+                                                <div class="mt-2">
+                                                    <strong class="text-primary">${{ part.price }}</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Case Section -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#caseCollapse">
+                            Cases
+                        </button>
+                    </h2>
+                    <div id="caseCollapse" class="accordion-collapse collapse" data-bs-parent="#partsAccordion">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                {% for part in parts %}
+                                    {% if part.part_type == 'CASE' %}
+                                    <div class="col-12 col-md-6">
+                                        <div class="card h-100 part-card" data-part-id="{{ part.id }}" data-part-name="{{ part.name|escapejs }}" data-part-type="{{ part.part_type }}" data-part-price="{{ part.price }}" data-allows-multiple="{% if part.allows_multiple %}true{% else %}false{% endif %}">
+                                            <button class="favorite-btn part-favorite-btn" 
+                                                    data-part-id="{{ part.id }}"
+                                                    data-is-favorited="{% if user in part.favorited_by.all %}true{% else %}false{% endif %}">
+                                                <img src="{% static 'images/heart-not-favorited.svg' %}" class="heart-icon" alt="Add to favorites">
+                                            </button>
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{ part.name }}</h6>
+                                                <small class="text-muted d-block">{{ part.manufacturer }}</small>
+                                                <div class="mt-2">
+                                                    <strong class="text-primary">${{ part.price }}</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cooling Section -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#coolerCollapse">
+                            CPU Coolers & Fans
+                        </button>
+                    </h2>
+                    <div id="coolerCollapse" class="accordion-collapse collapse" data-bs-parent="#partsAccordion">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                {% for part in parts %}
+                                    {% if part.part_type == 'COOLER' %}
+                                    <div class="col-12 col-md-6">
+                                        <div class="card h-100 part-card" data-part-id="{{ part.id }}" data-part-name="{{ part.name|escapejs }}" data-part-type="{{ part.part_type }}" data-part-price="{{ part.price }}" data-allows-multiple="{% if part.allows_multiple %}true{% else %}false{% endif %}">
+                                            <button class="favorite-btn part-favorite-btn" 
+                                                    data-part-id="{{ part.id }}"
+                                                    data-is-favorited="{% if user in part.favorited_by.all %}true{% else %}false{% endif %}">
+                                                <img src="{% static 'images/heart-not-favorited.svg' %}" class="heart-icon" alt="Add to favorites">
+                                            </button>
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{ part.name }}</h6>
+                                                <small class="text-muted d-block">{{ part.manufacturer }}</small>
+                                                <div class="mt-2">
+                                                    <strong class="text-primary">${{ part.price }}</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other Section -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#otherCollapse">
+                            Other Components
+                        </button>
+                    </h2>
+                    <div id="otherCollapse" class="accordion-collapse collapse" data-bs-parent="#partsAccordion">
+                        <div class="accordion-body">
+                            <div class="row g-2">
+                                {% for part in parts %}
+                                    {% if part.part_type == 'OTHER' %}
+                                    <div class="col-12 col-md-6">
+                                        <div class="card h-100 part-card" data-part-id="{{ part.id }}" data-part-name="{{ part.name|escapejs }}" data-part-type="{{ part.part_type }}" data-part-price="{{ part.price }}" data-allows-multiple="{% if part.allows_multiple %}true{% else %}false{% endif %}">
+                                            <button class="favorite-btn part-favorite-btn" 
+                                                    data-part-id="{{ part.id }}"
+                                                    data-is-favorited="{% if user in part.favorited_by.all %}true{% else %}false{% endif %}">
+                                                <img src="{% static 'images/heart-not-favorited.svg' %}" class="heart-icon" alt="Add to favorites">
+                                            </button>
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{ part.name }}</h6>
+                                                <small class="text-muted d-block">{{ part.manufacturer }}</small>
+                                                <div class="mt-2">
+                                                    <strong class="text-primary">${{ part.price }}</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right side: Current Parts and build summary -->
+        <div class="col-lg-4">
+            <div class="card bg-light sticky-top" style="top: 100px;">
+                <div class="card-body">
+                    <h5 class="card-title">Build Summary</h5>
+                    
+                    <div class="mb-3 p-2 border rounded" style="background-color: white;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <small class="text-muted">Budget</small>
+                            <div style="font-size: 1.2rem; color: #667eea;"><strong>${{ build.total_budget }}</strong></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <small class="text-muted">Used</small>
+                            <div style="font-size: 1.2rem; color: #667eea;"><strong id="totalCost">${{ build.get_total_cost|floatformat:2 }}</strong></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <small class="text-muted">New Parts Cost</small>
+                            <div style="font-size: 1.2rem; color: #28a745;"><strong id="newPartsCost">$0.00</strong></div>
+                        </div>
+                        <hr style="margin: 10px 0;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <small class="text-muted"><strong>Final Price</strong></small>
+                            <div style="font-size: 1.3rem; color: #667eea;"><strong id="finalPrice">${{ build.get_total_cost|floatformat:2 }}</strong></div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Sort dropdown -->
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: bold;">Sort By:</label>
+                        <select id="sortDropdown" class="form-select form-select-sm" onchange="sortCurrentParts()">
+                            <option value="added">Added</option>
+                            <option value="name">Name</option>
+                            <option value="type">Part Type</option>
+                            <option value="price-low">Price (Low to High)</option>
+                            <option value="price-high">Price (High to Low)</option>
+                        </select>
+                    </div>
+
+                    <h6>Selected Parts (<span id="partCount">0</span>)</h6>
+                    <div id="selectedPartsList" style="max-height: 400px; overflow-y: auto;">
+                        <p class="text-muted mb-0"><small>Click on a part to add it to your build.</small></p>
+                    </div>
+
+                    <br>
+
+                    <!-- Existing parts in build -->
+                    <h6 class="mt-4">Existing Parts ({{ build.builditem_set.count }})</h6>
+                    {% if build.builditem_set.all %}
+                        <ul class="list-unstyled" style="max-height: 200px; overflow-y: auto;">
+                            {% for item in build.builditem_set.all %}
+                                <li class="mb-2 pb-2" style="border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: flex-start;">
+                                    <small style="flex: 1;">
+                                        <strong>{{ item.part.name }}</strong>
+                                        <br>
+                                        <span class="text-muted">
+                                            × {{ item.quantity }} @ ${{ item.part.price }} = <strong>${{ item.get_total_price|floatformat:2 }}</strong>
+                                        </span>
+                                    </small>
+                                    <button type="button" class="btn btn-sm btn-danger ms-2" data-item-id="{{ item.id }}">
+                                        ×
+                                    </button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0"><small>No existing parts yet.</small></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Finish button -->
+    <div class="mt-4 row">
+        <div class="col-lg-8">
+            <form id="addPartsForm" method="post" class="d-flex gap-2">
+                {% csrf_token %}
+                <button type="submit" id="finishBtn" class="btn btn-success btn-lg btn-custom" disabled>
+                    ✓ Finish Adding Parts
+                </button>
+                <a href="{% url 'builds:build_detail_slug' build.slug %}" class="btn btn-outline-secondary btn-lg btn-custom">
+                    ← Back to Build
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-3 text-muted">
+        <small>Click on any part to add it to your selection. For multi-capable parts (RAM, Storage, Coolers), you can add multiple. For single-only parts (CPU, Motherboard, Case, PSU), selecting a new one replaces the previous.</small>
+    </div>
+</div>
+
+<script>
+
+// Store selected parts in memory
+let selectedParts = [];
+const usedCost = parseFloat("{{ build.get_total_cost|floatformat:2 }}");
+
+function addPartToSelection(partId, partName, partType, partPrice, allowsMultiple) {
+    // For single-only parts, replace existing part of that type
+    if (!allowsMultiple) {
+        const existingIndex = selectedParts.findIndex(p => p.partType === partType);
+        if (existingIndex !== -1) {
+            selectedParts.splice(existingIndex, 1);
+        }
+    }
+
+    // Add the new part
+    selectedParts.push({
+        partId: partId,
+        partName: partName,
+        partType: partType,
+        partPrice: parseFloat(partPrice),
+        allowsMultiple: allowsMultiple,
+        addedAt: new Date().getTime()
+    });
+
+    updateSelectedPartsList();
+    updateCostSummary();
+    updateFinishButton();
+}
+
+function removePartFromSelection(partId, index) {
+    selectedParts.splice(index, 1);
+    updateSelectedPartsList();
+    updateCostSummary();
+    updateFinishButton();
+}
+
+function removeExistingPart(itemId, buttonElement) {
+    if (confirm('Are you sure you want to remove this part from your build?')) {
+        // Send POST request to remove the part
+        fetch(`/builds/item/${itemId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Failed to remove part');
+        }).then(data => {
+            if (data.success) {
+                // Remove the list item from DOM
+                const listItem = buttonElement.closest('li');
+                listItem.style.opacity = '0';
+                listItem.style.transition = 'opacity 300ms';
+                setTimeout(() => {
+                    listItem.remove();
+                    // Reload after a short delay to update costs
+                    setTimeout(() => location.reload(), 100);
+                }, 300);
+            }
+        }).catch(error => {
+            alert('Error: ' + error);
+        });
+    }
+}
+
+function sortCurrentParts() {
+    const sortValue = document.getElementById('sortDropdown').value;
+    
+    switch(sortValue) {
+        case 'name':
+            selectedParts.sort((a, b) => a.partName.localeCompare(b.partName));
+            break;
+        case 'type':
+            selectedParts.sort((a, b) => a.partType.localeCompare(b.partType));
+            break;
+        case 'price-low':
+            selectedParts.sort((a, b) => a.partPrice - b.partPrice);
+            break;
+        case 'price-high':
+            selectedParts.sort((a, b) => b.partPrice - a.partPrice);
+            break;
+        case 'added':
+        default:
+            selectedParts.sort((a, b) => a.addedAt - b.addedAt);
+    }
+    
+    updateSelectedPartsList();
+}
+
+function updateSelectedPartsList() {
+    const listContainer = document.getElementById('selectedPartsList');
+    const partCount = document.getElementById('partCount');
+    
+    if (selectedParts.length === 0) {
+        listContainer.innerHTML = '<p class="text-muted mb-0"><small>Click on a part to add it to your build.</small></p>';
+        partCount.textContent = '0';
+        return;
+    }
+
+    partCount.textContent = selectedParts.length;
+
+    let html = '';
+    selectedParts.forEach((part, index) => {
+        html += `
+            <div class="part-item">
+                <div class="part-item-info">
+                    <strong style="font-size: 0.95rem; display: block;">${part.partName}</strong>
+                    <small class="text-muted">${part.partType} • $${part.partPrice.toFixed(2)}</small>
+                </div>
+                <div class="part-item-actions">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removePartFromSelection(${part.partId}, ${index})">
+                        Remove
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+
+    listContainer.innerHTML = html;
+}
+
+function updateCostSummary() {
+    // Calculate total of new parts
+    const newPartsCost = selectedParts.reduce((sum, part) => sum + part.partPrice, 0);
+    
+    // Update display
+    document.getElementById('newPartsCost').textContent = '$' + newPartsCost.toFixed(2);
+    
+    // Calculate final price
+    const finalPrice = usedCost + newPartsCost;
+    document.getElementById('finalPrice').textContent = '$' + finalPrice.toFixed(2);
+}
+
+function updateFinishButton() {
+    const finishBtn = document.getElementById('finishBtn');
+    finishBtn.disabled = selectedParts.length === 0;
+}
+
+document.querySelectorAll('.part-card').forEach((card) => {
+    card.addEventListener('click', function() {
+        addPartToSelection(
+            this.dataset.partId,
+            this.dataset.partName,
+            this.dataset.partType,
+            this.dataset.partPrice,
+            this.dataset.allowsMultiple === 'true'
+        );
+    });
+});
+
+document.querySelectorAll('[data-item-id]').forEach((button) => {
+    button.addEventListener('click', function() {
+        removeExistingPart(this.dataset.itemId, this);
+    });
+});
+
+// Handle form submission
+document.getElementById('addPartsForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    if (selectedParts.length === 0) {
+        alert('Please select at least one part to add.');
+        return;
+    }
+
+    // Create hidden inputs for each part
+    selectedParts.forEach((part) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'parts';
+        input.value = JSON.stringify(part);
+        this.appendChild(input);
+    });
+
+    // Submit the form via fetch to handle multiple parts
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    selectedParts.forEach((part) => {
+        formData.append('part_ids', part.partId);
+    });
+
+    // Use window.location to submit normally (Django will handle it)
+    const form = this;
+    const submitBtn = document.getElementById('finishBtn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Adding parts...';
+
+    // Actually submit the form
+    fetch(window.location.href, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    }).then(response => {
+        if (response.ok) {
+            window.location.href = '{% url "builds:build_detail_slug" build.slug %}';
+        } else {
+            alert('Error adding parts. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '✓ Finish Adding Parts';
+        }
+    }).catch(error => {
+        alert('Error: ' + error);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '✓ Finish Adding Parts';
+    });
+});
+
+updateFinishButton();
+updateCostSummary();
+
+// Handle part favorite button clicks
+document.querySelectorAll('.part-favorite-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const partId = this.dataset.partId;
+        const isFavorited = this.dataset.isFavorited === 'true';
+        
+        fetch(`{% url 'builds:toggle_favorite_part' '999' %}`.replace('999', partId), {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const newIsFavorited = data.is_favorited;
+                this.dataset.isFavorited = newIsFavorited;
+                
+                const img = this.querySelector('.heart-icon');
+                if (newIsFavorited) {
+                    img.src = "{% static 'images/heart-favorited.svg' %}";
+                } else {
+                    img.src = "{% static 'images/heart-not-favorited.svg' %}";
+                }
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+});
+</script>
+{% endblock %}

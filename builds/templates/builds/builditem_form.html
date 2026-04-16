@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Update Part in Build{% endblock %}
+
+{% block content %}
+<div class="col-md-8 mx-auto">
+    <h2 class="mb-4">Update Part in Build</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-info">
+                <strong>Current Part:</strong> {{ object.part.name }} ({{ object.part.get_part_type_display }})
+                <br>
+                <strong>Current Price:</strong> ${{ object.part.price }}
+            </div>
+
+            {% crispy form %}
+        </div>
+    </div>
+</div>
+{% endblock %}

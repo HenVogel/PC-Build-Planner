@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Edit{% else %}Create{% endif %} PC Build{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/build_form.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="col-md-10 mx-auto">
+    <h2 class="mb-4">
+        {% if form.instance.pk %}
+            Edit Build: {{ form.instance.name }}
+        {% else %}
+            Create New PC Build
+        {% endif %}
+    </h2>
+
+    <div class="card build-form-card">
+        <div class="card-body">
+            {% crispy form %}
+        </div>
+    </div>
+</div>
+{% endblock %}

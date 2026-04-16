@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Build - {{ build.name }}{% endblock %}
+
+{% block content %}
+<div class="col-md-6 mx-auto">
+    <div class="card border-danger">
+        <div class="card-body">
+            <h3 class="card-title text-danger">Delete Build</h3>
+            
+            <div class="alert alert-warning" role="alert">
+                <strong>Warning:</strong> This action cannot be undone!
+            </div>
+
+            <p class="card-text">
+                Are you sure you want to delete the build <strong>"{{ build.name }}"</strong>?
+            </p>
+
+            <p class="card-text text-muted">
+                This will permanently delete this build and all associated parts.
+            </p>
+
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                <div class="d-grid gap-2 d-sm-flex">
+                    <button type="submit" class="btn btn-danger btn-custom">
+                        Yes, Delete Build
+                    </button>
+                    <a href="{% url 'builds:build_detail_slug' build.slug %}" class="btn btn-outline-secondary btn-custom">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

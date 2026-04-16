@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Remove Part from Build{% endblock %}
+
+{% block content %}
+<div class="col-md-6 mx-auto">
+    <div class="card border-danger">
+        <div class="card-body">
+            <h3 class="card-title text-danger">🗑️ Remove Part from Build</h3>
+            
+            <div class="alert alert-warning" role="alert">
+                <strong>Are you sure?</strong> This will remove the part from your build.
+            </div>
+
+            <p class="card-text">
+                You are about to remove:
+                <br>
+                <strong>{{ object.part.name }}</strong> ({{ object.part.get_part_type_display }})
+                <br>
+                <small class="text-muted">
+                    Quantity: {{ object.quantity }} | Price: ${{ object.part.price }} = <strong>${{ object.get_total_price }}</strong>
+                </small>
+            </p>
+
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                <div class="d-grid gap-2 d-sm-flex">
+                    <button type="submit" class="btn btn-danger btn-custom">
+                        Yes, Remove Part
+                    </button>
+                    <a href="{% url 'builds:build_detail_slug' object.pc_build.slug %}" class="btn btn-outline-secondary btn-custom">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

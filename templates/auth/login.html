@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block title %}Login - PC Build Planner{% endblock %}
+
+{% block content %}
+<div class="auth-page row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-lg auth-card">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-4 auth-heading">
+                    Sign In
+                </h2>
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Login Failed</strong>
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+                
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {% crispy form %}
+                </form>
+                
+                <hr class="my-4">
+                
+                <p class="text-center text-muted">
+                    Don't have an account?
+                    <a href="{% url 'builds:signup' %}" class="text-decoration-none auth-muted-link">
+                        Create one now
+                    </a>
+                </p>
+            </div>
+        </div>
+        
+        <p class="text-center mt-3 text-muted small">
+            <em>Only registered users can access the build planner.</em>
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/build_list.css' %}">
+{% endblock %}
+
+{% block title %}My PC Builds{% endblock %}
+
+{% block content %}
+<div class="build-list-hero">
+    <div>
+        <h2 class="build-header">My PC Builds</h2>
+        {% if user_builds_count > 0 %}
+            <small class="text-muted">
+                You have <strong>{{ user_builds_count }}</strong> build(s)
+            </small>
+        {% endif %}
+    </div>
+    <a href="{% url 'builds:build_create' %}" class="btn btn-primary btn-custom">
+        + Create New Build
+    </a>
+</div>
+
+{% if builds %}
+    <div class="row">
+        {% for build in builds %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 build-list-card">
+                    <button class="favorite-btn build-favorite-btn" 
+                            data-build-slug="{{ build.slug }}"
+                            data-is-favorited="{% if user in build.favorited_by.all %}true{% else %}false{% endif %}">
+                        <img src="{% static 'images/heart-not-favorited.svg' %}" class="heart-icon" alt="Add to favorites">
+                    </button>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ build.name }}</h5>
+                        
+                        <div class="budget-info p-2 mb-3">
+                            <div class="budget-item">
+                                <div class="budget-label">Budget</div>
+                                <div class="budget-value">${{ build.total_budget }}</div>
+                            </div>
+                            <div class="budget-item">
+                                <div class="budget-label">Used</div>
+                                <div class="budget-value">${{ build.get_total_cost }}</div>
+                            </div>
+                            <div class="budget-item">
+                                <div class="budget-label">Remaining</div>
+                                <div class="budget-value">
+                                    {% with remaining=build.get_remaining_budget %}
+                                        {% if remaining >= 0 %}
+                                            <span style="color: #28a745;">${{ remaining }}</span>
+                                        {% else %}
+                                            <span style="color: #dc3545;">-${{ remaining|add:0 }}</span>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if build.notes %}
+                            <p class="card-text"><small class="text-muted">{{ build.notes|truncatewords:20 }}</small></p>
+                        {% else %}
+                            <p class="card-text"><small class="text-muted">No notes</small></p>
+                        {% endif %}
+                        
+                        <div class="mb-2">
+                            {% if build.is_public %}
+                                <span class="badge bg-success">Public</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Private</span>
+                            {% endif %}
+                            {% if build.creator == user %}
+                                <span class="badge bg-info">Your Build</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid gap-2 mt-3">
+                            <a href="{% url 'builds:build_detail_slug' build.slug %}" class="btn btn-outline-primary btn-sm">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light">
+                        <small class="text-muted">
+                            Created: {{ build.created_at|date:"M d, Y" }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+
+{% else %}
+    <div class="alert alert-info text-center build-list-empty">
+        <h4>No builds yet!</h4>
+        <p>Create your first PC build to get started.</p>
+        <a href="{% url 'builds:build_create' %}" class="btn btn-primary btn-custom mt-2">
+            + Create Your First Build
+        </a>
+    </div>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle build favorite button clicks
+    document.querySelectorAll('.build-favorite-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const buildSlug = this.dataset.buildSlug;
+            const isFavorited = this.dataset.isFavorited === 'true';
+            
+            fetch(`{% url 'builds:toggle_favorite_build' 'SLUG_PLACEHOLDER' %}`.replace('SLUG_PLACEHOLDER', buildSlug), {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const newIsFavorited = data.is_favorited;
+                    this.dataset.isFavorited = newIsFavorited;
+                    
+                    const img = this.querySelector('.heart-icon');
+                    if (newIsFavorited) {
+                        img.src = "{% static 'images/heart-favorited.svg' %}";
+                    } else {
+                        img.src = "{% static 'images/heart-not-favorited.svg' %}";
+                    }
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}
