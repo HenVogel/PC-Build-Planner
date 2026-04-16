@@ -1,236 +1,196 @@
-# PC Build Planner & Part Compatibility
+# PC Build Planner
 
-A Django-based web application for planning, managing, and optimizing PC builds with component compatibility tracking.
+PC Build Planner is a Django web app for creating and managing custom PC builds with budget tracking, wattage guidance, and per-user ownership controls.
 
 ## Features
 
-✓ **Build Management**: Create and manage multiple PC builds with separate budgets  
-✓ **Component Library**: Browse and select from a comprehensive database of PC components  
-✓ **Budget Tracking**: Monitor total budget, used budget, and remaining funds  
-✓ **Part Management**: Add, swap, and remove components from builds  
-✓ **Authorization**: Only build creators can edit their own builds  
-✓ **Responsive Design**: Beautiful UI built with Bootstrap 5  
-✓ **Django Admin**: Full admin interface for managing parts and builds  
+- Build dashboard with pagination
+- Create, edit, and delete builds
+- Add, update, and remove build parts
+- Budget calculations (total, remaining, percent used)
+- Wattage calculations with PSU recommendation
+- Public/private builds via `is_public`
+- Favorites for builds and parts
+- Custom auth pages: login, signup, profile
+- Django admin for full data management
 
-## Project Structure
+## Tech Stack
 
-```
-pc_builder/                          # Main Django project
-├── settings.py                      # Django settings
-├── urls.py                          # Main URL configuration
-└── ...
+- Python
+- Django 6.0.4
+- django-crispy-forms + crispy-bootstrap5
+- SQLite (default)
+- Pillow (image uploads)
 
-builds/                              # Main app for PC builds
-├── models.py                        # Database models
-├── views.py                         # View logic
-├── forms.py                         # Django forms
-├── admin.py                         # Admin configuration
-├── urls.py                          # App URL patterns
-├── templatetags/
-│   └── custom_filters.py            # Custom template filters
-├── migrations/                      # Database migrations
-└── templates/builds/                # App templates
+## Quick Start
 
-templates/                           # Project-wide templates
-├── base.html                        # Base template
-└── home.html                        # Home page
+### 1. Create and activate a virtual environment
 
-scripts/                             # Utility scripts
-├── create_sample_parts.py          # Load sample PC components
-└── set_admin_password.py           # Set admin user password
+Windows PowerShell:
 
-manage.py                            # Django management script
-db.sqlite3                           # SQLite database
-.venv/                               # Python virtual environment
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
 
-## Models
+### 2. Install dependencies
 
-### 1. **Part**
-Represents a PC component (CPU, GPU, RAM, PSU, etc.)
-
-**Fields:**
-- `name` (CharField): Component name
-- `part_type` (CharField): Type of part (CPU, GPU, RAM, SSD, HDD, PSU, CASE, MOTHERBOARD, COOLER, OTHER)
-- `wattage` (IntegerField): Power consumption (optional)
-- `price` (DecimalField): Component cost
-- `created_at` & `updated_at` (DateTimeField): Timestamps
-
-### 2. **PCBuild**
-Represents a complete PC build configuration
-
-**Fields:**
-- `name` (CharField): Build name
-- `total_budget` (DecimalField): Budget limit for the build
-- `notes` (TextField): Additional notes and comments
-- `creator` (ForeignKey): User who created the build
-- `created_at` & `updated_at` (DateTimeField): Timestamps
-
-**Methods:**
-- `get_total_cost()`: Calculate total cost of all parts
-- `get_remaining_budget()`: Calculate remaining budget
-
-### 3. **BuildItem**
-Links Parts to PCBuilds (many-to-many with metadata)
-
-**Fields:**
-- `pc_build` (ForeignKey): Reference to PCBuild
-- `part` (ForeignKey): Reference to Part
-- `quantity` (IntegerField): Number of this part in the build
-- `added_at` (DateTimeField): When part was added
-
-**Constraints:**
-- Unique combination of pc_build and part
-
-## Views & URLs
-
-### Build Management
-- `GET /builds/` - **BuildListView**: List all user's builds
-- `GET/POST /builds/create/` - **BuildCreateView**: Create new build
-- `GET /builds/<id>/` - **BuildDetailView**: View build with all parts
-- `GET/POST /builds/<id>/edit/` - **BuildUpdateView**: Edit build details
-- `GET/POST /builds/<id>/delete/` - **BuildDeleteView**: Delete build
-
-### Part Management
-- `GET/POST /builds/<id>/add-part/` - **AddPartToBuildView**: Add parts to build
-- `GET/POST /builds/item/<id>/edit/` - **UpdateBuildItemView**: Swap/update parts
-- `GET/POST /builds/item/<id>/delete/` - **DeleteBuildItemView**: Remove parts
-- `GET /builds/api/parts/` - **parts_api**: API for dynamic part loading
-
-## Authorization
-
-The application implements role-based authorization:
-- **Login Required**: All build management requires authentication
-- **Owner-based Access**: `UserIsOwnerMixin` ensures only the build creator can edit/delete
-- **Automatic Creator Assignment**: Build creator is automatically set when creating
-
-## Credentials
-
-Default admin account created:
-- **Username**: `admin`
-- **Password**: `admin123`
-
-## How to Use
-
-### 1. **Access the Application**
-```
-http://localhost:8000
-```
-
-### 2. **Login**
-- Click "Login" on the home page
-- Or navigate to: `http://localhost:8000/admin/`
-- Use credentials above
-
-### 3. **Create a PC Build**
-- Click "Create Build" button
-- Fill in build name, total budget, and notes
-- Click "Create Build"
-
-### 4. **Add Components**
-- On build detail page, click "+ Add Part"
-- Select a component from the dropdown
-- Set quantity
-- Click "Add Part to Build"
-
-### 5. **Manage Components**
-- **Swap Part**: Click "Swap" on a component to replace it
-- **Remove Part**: Click "Remove" to delete from build
-- **Budget Tracking**: View remaining budget in real-time
-
-### 6. **Edit or Delete Build**
-- Click "Edit Build" to modify name, budget, or notes
-- Click "Delete Build" to remove the entire build
-
-## Admin Interface
-
-Access admin at: `http://localhost:8000/admin/`
-
-**Admin Features:**
-- Add/edit/delete Parts
-- View all builds and build items
-- Filter by type, creator, date
-- Search by name
-
-## Sample Data
-
-17 pre-loaded hardware components are included:
-- CPUs: Intel Core i9-13900K, AMD Ryzen 9 7950X
-- GPUs: RTX 4090, RTX 4070, AMD RX 7900 XTX
-- RAM: Corsair, G.Skill DDR5 options
-- Storage: Samsung 990 Pro, WD Black NVMe
-- Power Supplies: 850W-1000W options
-- Cases: NZXT H9 Flow, Lian Li Lancool
-- Motherboards: MSI Z790, ASUS ROG options
-- Coolers: Noctua NH-D15, NZXT Kraken
-
-## Development
-
-### Install Dependencies
 ```bash
-pip install Django==4.2.11 python-decouple==3.8
+pip install -r requirements.txt
 ```
 
-### Create Superuser
+### 3. Apply migrations
+
+```bash
+python manage.py migrate
+```
+
+### 4. Create an admin user
+
 ```bash
 python manage.py createsuperuser
 ```
 
-### Run Migrations
+Optional: if you created an `admin` user and want the dev password:
+
 ```bash
-python manage.py makemigrations
-python manage.py migrate
+python scripts/set_admin_password.py
 ```
 
-### Populate Sample Data
+This sets the `admin` account password to `superpassword`.
+
+### 5. Load sample parts
+
 ```bash
 python scripts/create_sample_parts.py
 ```
 
-### Start Development Server
+### 6. Run the server
+
 ```bash
 python manage.py runserver
 ```
 
-## Key Technologies
+Open:
 
-- **Framework**: Django 4.2.11
-- **Database**: SQLite (default, easily switchable)
-- **Frontend**: Bootstrap 5, HTML5, CSS3
-- **Python**: 3.14+
+- http://127.0.0.1:8000/
+- http://127.0.0.1:8000/admin/
 
-## Custom Template Filters
+## Core Models
 
-- `mul`: Multiply two values (e.g., `price|mul:quantity`)
-- `currency`: Format as currency (e.g., `value|currency`)
+### Part
 
-## Security Features
+Represents hardware components.
 
-✓ CSRF protection on all forms  
-✓ SQL injection prevention via ORM  
-✓ Login required for protected views  
-✓ Authorization checks for ownership  
-✓ Secure password hashing  
+Key fields:
 
-## Future Enhancement Ideas
+- `name`, `manufacturer`
+- `part_type` (CPU, GPU, RAM, SSD, HDD, PSU, CASE, MOTHERBOARD, COOLER, OTHER)
+- `wattage`, `price`, `status`
+- `description`, `image`
+- `favorited_by`
 
-- Advanced search and filtering
-- Part compatibility checker
-- Price history and trend tracking
-- Wishlist/comparison features
-- Export builds to PDF
-- Share builds with users
-- Reviews and ratings system
-- API for mobile apps
+### PCBuild
 
-## Support
+Represents a user build.
 
-For issues or questions, check:
-1. Django documentation: https://docs.djangoproject.com/
-2. Admin panel for direct data management
-3. Terminal output for debug information
+Key fields:
 
----
+- `name`, `slug`
+- `total_budget`, `notes`, `description`
+- `image`, `is_public`
+- `creator`, `favorited_by`
 
-**Created**: April 2026  
-**Last Updated**: April 13, 2026
+Utility methods include:
+
+- `get_total_cost()`
+- `get_remaining_budget()`
+- `get_total_wattage()`
+- `get_recommended_psu()`
+- `get_budget_percentage()`
+
+### BuildItem
+
+Join model between `PCBuild` and `Part`.
+
+Key fields:
+
+- `pc_build`, `part`
+- `quantity`
+- `added_at`
+
+Constraint:
+
+- Unique pair of `pc_build` and `part`
+
+## Main Routes
+
+### Project
+
+- `/` home page
+- `/admin/` Django admin
+
+### Authentication
+
+- `/builds/auth/login/`
+- `/builds/auth/logout/`
+- `/builds/auth/signup/`
+- `/builds/auth/profile/`
+
+### Builds
+
+- `/builds/` list your builds
+- `/builds/create/` create build
+- `/builds/<slug>/` build detail (preferred)
+- `/builds/<pk>/` legacy detail route
+- `/builds/<slug>/edit/`
+- `/builds/<slug>/delete/`
+- `/builds/<slug>/add-part/`
+- `/builds/item/<item_pk>/edit/`
+- `/builds/item/<item_pk>/delete/`
+
+### API Endpoints
+
+- `/builds/api/parts/`
+- `/builds/api/toggle-favorite-build/<slug>/`
+- `/builds/api/toggle-favorite-part/<pk>/`
+
+## Authorization Rules
+
+- Most build management requires login.
+- Only the creator can edit/delete a build or its items.
+- Build detail pages are viewable by the owner or when `is_public` is true.
+
+## Project Layout
+
+```text
+pc_builder/               Django project settings and root URLs
+builds/                   Main app (models, views, forms, urls, admin)
+builds/templates/builds/  Build-specific templates
+builds/migrations/        Database migrations
+builds/templatetags/      Custom template filters
+templates/                Global templates (home, base, auth, errors)
+static/                   CSS and images
+media/                    Uploaded images
+scripts/                  Utility scripts for setup and sample data
+```
+
+## Useful Commands
+
+```bash
+python manage.py check
+python manage.py test
+python manage.py makemigrations
+python manage.py migrate
+```
+
+## Notes
+
+- Current settings are development-oriented (`DEBUG=True` in settings).
+- Sample data script is idempotent (`update_or_create`), so it is safe to rerun.
+
+## Additional Docs
+
+- `QUICK_START.md` for a user walkthrough
+- `TESTING.md` for manual test scenarios
+- `PROJECT_SUMMARY.md` for project scope and status
