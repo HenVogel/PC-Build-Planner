@@ -241,6 +241,7 @@ class BuildDeleteView(LoginRequiredMixin, UserIsOwnerMixin, DeleteView):
     """Delete a PC build."""
     model = PCBuild
     template_name = 'builds/build_confirm_delete.html'
+    context_object_name = 'build'
     success_url = reverse_lazy('builds:build_list')
     slug_field = 'slug'
     slug_url_kwarg = 'slug'

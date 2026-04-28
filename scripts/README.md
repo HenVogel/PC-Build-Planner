@@ -4,12 +4,12 @@ This folder contains helper scripts for setting up and maintaining the PC Build 
 
 ## Scripts
 
-### `create_sample_parts.py`
+### `parts.py`
 Loads sample PC components into the database.
 
 **Usage:**
 ```bash
-python scripts/create_sample_parts.py
+python scripts/parts.py
 ```
 
 **What it does:**

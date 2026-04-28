@@ -1,24 +1,188 @@
 /* Global Styles */
+:root {
+    --background-deep: #07111f;
+    --background-blue: #1b4dff;
+    --background-indigo: #5b2cff;
+    --background-purple: #8b3dff;
+}
+
+html {
+    height: 100%;
+    background: #07111f;
+}
+
 body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    padding-top: 80px;
+    background:
+        radial-gradient(circle at top left, rgba(27, 77, 255, 0.55) 0%, rgba(27, 77, 255, 0) 36%),
+        radial-gradient(circle at 50% 110%, rgba(91, 44, 255, 0.42) 0%, rgba(91, 44, 255, 0) 42%),
+        radial-gradient(circle at bottom right, rgba(139, 61, 255, 0.55) 0%, rgba(139, 61, 255, 0) 34%),
+        linear-gradient(135deg, var(--background-deep) 0%, #0c1a38 48%, #1d1138 100%);
+    background-size: 140% 140%, 180% 180%, 150% 150%, 100% 100%;
+    background-attachment: scroll;
+    animation: pulseBackdrop 16s ease-in-out infinite alternate;
+    padding-top: 70px;
+    padding-bottom: 0;
     margin: 0;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    position: relative;
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
+}
+
+main { 
+    flex: 1; 
+}
+
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    inset: auto;
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(70px);
+    opacity: 0.3;
+    animation: floatGlow 18s ease-in-out infinite alternate;
+}
+
+body::before {
+    width: 28rem;
+    height: 28rem;
+    top: -6rem;
+    left: -5rem;
+    background: rgba(27, 77, 255, 0.45);
+}
+
+body::after {
+    width: 32rem;
+    height: 32rem;
+    right: -8rem;
+    bottom: -10rem;
+    background: rgba(139, 61, 255, 0.4);
+    animation-delay: -9s;
 }
 
 .page-content {
+    position: relative;
+    z-index: 1;
     flex: 1;
 }
 
 .navbar {
     background-color: rgba(0, 0, 0, 0.8) !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    overflow: visible;
+    z-index: 1030;
+}
+
+.navbar .container-fluid {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-collapse {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Logo icon animation */
+.brand-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.25rem;
+    transition: transform 0.3s ease;
+}
+
+.brand-with-icon i {
+    animation: pulseIcon 2s ease-in-out infinite;
+    color: #1b4dff;
+}
+
+@keyframes pulseIcon {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+.brand-with-icon:hover {
+    transform: translateY(-2px);
+}
+
+
+/* User avatar styling */
+.user-profile-item {
+    margin-left: 15px;
+}
+
+.user-profile-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px !important;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.user-profile-link:hover {
+    background: rgba(27, 77, 255, 0.2);
+    text-decoration: none;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #1b4dff, #5b2cff);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.85rem;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(27, 77, 255, 0.4);
+    animation: avatarFloat 3s ease-in-out infinite;
+}
+
+@keyframes avatarFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+.username-text {
+    font-weight: 500;
+    color: #ffffff;
 }
 
 .nav-item .nav-link {
     color: #ffffff !important;
     font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.nav-item .nav-link:hover {
+    color: #1b4dff !important;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 991px) {
+    .username-text {
+        display: none;
+    }
 }
 
 .container {
@@ -85,5 +249,43 @@ body {
     text-align: center;
     padding: 20px;
     color: white;
-    margin-top: 40px;
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.footer p {
+    margin: 0;
+    padding: 0;
+}
+
+@keyframes pulseBackdrop {
+    0% {
+        background-position: 0% 0%, 100% 100%, 0% 50%;
+        filter: saturate(1) brightness(0.95);
+    }
+
+    100% {
+        background-position: 100% 0%, 0% 100%, 100% 50%;
+        filter: saturate(1.2) brightness(1.05);
+    }
+}
+
+@keyframes floatGlow {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    100% {
+        transform: translate3d(24px, -18px, 0) scale(1.08);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body,
+    body::before,
+    body::after {
+        animation: none;
+    }
 }
